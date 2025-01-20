@@ -28,7 +28,11 @@
   <p>Oyun kodunu paylaş ve arkadaşınla oyna!</p>
   <input type="text" id="gameCode" placeholder="Oyun Kodu">
   <button onclick="joinGame()">Oyuna Katıl</button>
-  <button onclick="createGame()">Oyun Oluştur</button>
+  <button id="createGameButton">Oyunu Oluştur</button>
+  <script>
+    document.getElementById('createGameButton').addEventListener('click', createGame);
+  </script>
+  
 
   <div class="choices" id="gameArea" style="display: none;">
     <h2>Hamleni Seç</h2>
@@ -55,31 +59,31 @@
     const app = firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-// Değişkenleri globalde tanımlayın
-let gameCode = '';
-let player = '';
+// Global değişken tanımları
+let gameCode = ''; // Oyun kodu
+let player = '';   // Oyuncu tipi
 
 function createGame() {
-  // gameCode değişkenini oluştur ve değer ata
+  // Yeni bir oyun kodu oluştur
   gameCode = Math.random().toString(36).substring(2, 8).toUpperCase();
   player = 'player1';
 
-  // Firebase'de oyun odası oluştur
+  // Firebase veritabanında bir oyun odası oluştur
   database.ref('games/' + gameCode).set({
     player1: null,
     player2: null
   });
 
-  // Kullanıcıya bilgi ver
-  document.getElementById('status').innerText = `Oyun kodu: ${gameCode}. Kodu paylaş!`;
+  // Kullanıcıya bilgi göster
+  document.getElementById('status').innerText = `Oyun kodu: ${gameCode}. Kodu arkadaşınla paylaş!`;
   document.getElementById('gameArea').style.display = 'block';
 }
 
 function joinGame() {
-  // Input alanından oyun kodunu al
+  // Kullanıcının girdiği oyun kodunu al
   gameCode = document.getElementById('gameCode').value.toUpperCase();
 
-  // Firebase'den oyun kodunu kontrol et
+  // Veritabanından oyun kodunu kontrol et
   database.ref('games/' + gameCode).get().then((snapshot) => {
     if (snapshot.exists()) {
       player = 'player2';
@@ -90,6 +94,7 @@ function joinGame() {
     }
   });
 }
+
 
     function makeMove(choice) {
       database.ref('games/' + gameCode + '/' + player).set(choice);
