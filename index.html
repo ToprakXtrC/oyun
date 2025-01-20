@@ -55,27 +55,31 @@
     const app = firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    let gameCode = ''; 
-let player = ''; 
+// Değişkenleri globalde tanımlayın
+let gameCode = '';
+let player = '';
 
 function createGame() {
-  // gameCode değişkeni burada atanıyor
+  // gameCode değişkenini oluştur ve değer ata
   gameCode = Math.random().toString(36).substring(2, 8).toUpperCase();
-  player = 'player1'; // player bilgisi atanıyor
-  
+  player = 'player1';
+
+  // Firebase'de oyun odası oluştur
   database.ref('games/' + gameCode).set({
     player1: null,
     player2: null
   });
 
+  // Kullanıcıya bilgi ver
   document.getElementById('status').innerText = `Oyun kodu: ${gameCode}. Kodu paylaş!`;
   document.getElementById('gameArea').style.display = 'block';
 }
 
 function joinGame() {
-  // gameCode input'tan alınıyor
+  // Input alanından oyun kodunu al
   gameCode = document.getElementById('gameCode').value.toUpperCase();
-  
+
+  // Firebase'den oyun kodunu kontrol et
   database.ref('games/' + gameCode).get().then((snapshot) => {
     if (snapshot.exists()) {
       player = 'player2';
@@ -86,6 +90,7 @@ function joinGame() {
     }
   });
 }
+
     function makeMove(choice) {
       database.ref('games/' + gameCode + '/' + player).set(choice);
       checkWinner();
