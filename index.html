@@ -55,32 +55,32 @@
     const app = firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    let gameCode = '';
-    let player = '';
+    let gameCode = ''; // Global olarak tanımlandı
+let player = '';   // Global olarak tanımlandı
 
-    function createGame() {
-      gameCode = Math.random().toString(36).substring(2, 8).toUpperCase();
-      player = 'player1';
-      database.ref('games/' + gameCode).set({
-        player1: null,
-        player2: null
-      });
-      document.getElementById('status').innerText = `Oyun kodu: ${gameCode}. Kodu paylaş!`;
+function createGame() {
+  gameCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+  player = 'player1';
+  database.ref('games/' + gameCode).set({
+    player1: null,
+    player2: null
+  });
+  document.getElementById('status').innerText = `Oyun kodu: ${gameCode}. Kodu paylaş!`;
+  document.getElementById('gameArea').style.display = 'block';
+}
+
+function joinGame() {
+  gameCode = document.getElementById('gameCode').value.toUpperCase();
+  database.ref('games/' + gameCode).get().then((snapshot) => {
+    if (snapshot.exists()) {
+      player = 'player2';
+      document.getElementById('status').innerText = `Oyuna katıldınız: ${gameCode}`;
       document.getElementById('gameArea').style.display = 'block';
+    } else {
+      alert('Oyun bulunamadı!');
     }
-
-    function joinGame() {
-      gameCode = document.getElementById('gameCode').value.toUpperCase();
-      database.ref('games/' + gameCode).get().then((snapshot) => {
-        if (snapshot.exists()) {
-          player = 'player2';
-          document.getElementById('status').innerText = `Oyuna katıldınız: ${gameCode}`;
-          document.getElementById('gameArea').style.display = 'block';
-        } else {
-          alert('Oyun bulunamadı!');
-        }
-      });
-    }
+  });
+}
 
     function makeMove(choice) {
       database.ref('games/' + gameCode + '/' + player).set(choice);
